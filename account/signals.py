@@ -4,6 +4,7 @@ from . models import User, UserProfile
 
 @receiver(post_save, sender=User)
 def post_save_create_profile_receiver(sender, instance, created,**kwargs):
+    print(created)
     if created:
         UserProfile.objects.create(user=instance)
     else:
@@ -12,7 +13,7 @@ def post_save_create_profile_receiver(sender, instance, created,**kwargs):
             profile.save()
         except:
             #we will create user if the user not exist
-            UserProfile.objects.create(user=instance) 
+            UserProfile.objects.create(user=instance)
             
         
 @receiver(pre_save,sender = UserProfile)
