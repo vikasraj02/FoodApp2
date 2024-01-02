@@ -3,6 +3,7 @@ from . import views
 
 
 urlpatterns = [
+    path("", views.myAccount, name = "myAccount"),
     path("registerUser/",views.registerUser, name="registerUser"),
     path("registerVendor/",views.registerVendor, name="registerVendor"),
     path("login/",views.login, name="login"),
@@ -14,4 +15,5 @@ urlpatterns = [
     path("forgot_password/",views.forgot_password, name = 'forgot_password'),
     path("reset_password_validation/<uidb64>/<token>/",views.reset_password_validation, name = 'reset_password_validation'),
     path("reset_password/",views.reset_password, name = 'reset_password'),
+    path("vendor/", include("vendor.urls"))
 ]

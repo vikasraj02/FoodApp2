@@ -9,6 +9,7 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
 import logging
+from vendor.models import vendor
 
 
 # Restrict the vendor from accessing the customer page
@@ -112,20 +113,20 @@ def logout(request):
     messages.info(request, "your are logged out")
     return redirect("login")
 
-@login_required(login_url="login")
+@login_required(login_url="login") # this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
 def myAccount(request):
     user = request.user
     redirectUrl = detectUser(user)
     return redirect(redirectUrl)
 
-@login_required(login_url="login")
-@user_passes_test(check_role_customer)
+@login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
+@user_passes_test(check_role_customer) # if loggedin user is vender and tried to access customer dashboard then it will give error
 def CustomerDashboard(request):
     return render(request, 'account/CustomerDashboard.html')
 
 
-@login_required(login_url="login")
-@user_passes_test(check_role_vendor)
+@login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
+@user_passes_test(check_role_vendor) # if loggedin user is cutomer and tried to access vendor dashboard then it will give error
 def VendorDashboard(request):
     return render(request, 'account/VendorDashboard.html')
 
