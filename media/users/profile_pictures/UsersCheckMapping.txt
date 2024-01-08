@@ -1,0 +1,69 @@
+import pandas as pd
+import pyodbc
+
+server_name = ''
+database_name = ''
+login = ''
+password = ''
+
+# Connection string
+conn_str = f'DRIVER={{SQL Server}};SERVER={server_name};DATABASE={database_name};UID={login};PWD={password}'
+# SQL query
+
+# SQL queries
+select_user_query = "SELECT UniqueUserName FROM aspnetusers WHERE phonenumber = ?"
+select_lead_query = "SELECT * FROM leads WHERE phonenumber = ?"
+
+# Read Excel file into DataFrame
+df = pd.read_excel(r"C:\Users\navee\Downloads\usersCheck.xlsx")  # Replace with your actual file path
+select_user_query = "SELECT UniqueUserName FROM aspnetusers WHERE phonenumber = ?"
+select_lead_query = "SELECT * FROM leads WHERE phonenumber = ?"
+
+
+# Function to check user existence and update DataFrame
+def check_user_existence(row):
+    try:
+        # Convert phone number to string
+        phone_number = str(row['A'])
+
+        # Establish a connection
+        conn = pyodbc.connect(conn_str)
+
+        # Create a cursor from the connection
+        cursor = conn.cursor()
+
+        # Check if the user exists in aspnetusers table
+        cursor.execute(select_user_query, phone_number)
+        user_row = cursor.fetchone()
+
+        if user_row:
+            # User exists, update UniqueUserName in column 'B'
+            row['B'] = user_row.UniqueUserName
+        else:
+            # User does not exist, set 'New' in column 'B'
+            row['B'] = 'New'
+
+        # Check if the phonenumber is in leads table
+        cursor.execute(select_lead_query, phone_number)
+        lead_row = cursor.fetchone()
+
+        if lead_row:
+            # Phonenumber exists in leads table, set 'Available' in column 'C'
+            row['C'] = 'Available'
+        else:
+            # Phonenumber does not exist in leads table, set 'New' in column 'C'
+            row['C'] = 'New'
+
+        # Close the cursor and connection when done
+        cursor.close()
+        conn.close()
+
+    except pyodbc.Error as e:
+        print(f"Database error: {e}")
+
+    return row
+
+# Apply the function to each row in the DataFrame
+df = df.apply(check_user_existence, axis=1)
+
+df.to_excel('UsersCheck.xlsx', index=False)

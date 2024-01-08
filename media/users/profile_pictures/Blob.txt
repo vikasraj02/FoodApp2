@@ -1,0 +1,18 @@
+Blob
+steps 
+1)create storage account 
+2)create container
+3) then we will upload files in it
+
+
+-> It is used to store large amount of unstructured data, users and clients can access data using HTTP/HTTPS.
+
+step 1
+->click storage accounts
+->click create storage account
+->under Basics in Subscription opiton select Azure scubscription ,under Resource group if there is any Resource group then select it or we have to create a Resource Group 
+->select storage account name( it should be unique)
+->Region 
+
+
+youtube URL:- https://www.youtube.com/watch?v=ZMlZ39cCitQ 
