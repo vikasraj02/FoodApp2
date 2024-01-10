@@ -8,6 +8,10 @@ from django.contrib import messages
 
 from django.contrib.auth.decorators import login_required, user_passes_test
 from account.views import check_role_vendor
+from menu.models import Category, FoodItem
+from menu.forms import CategoryForm
+from django.template.defaultfilters import slugify
+
 # Create your views here.
 
 # def vprofile(request):
@@ -37,7 +41,9 @@ from account.views import check_role_vendor
 #     }
 #     return render(request, 'vendor/vprofile.html',context)
 
-
+def get_vendor (request):
+    Vendor = vendor.objects.get(user=request.user)
+    return Vendor
 
 @login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
 @user_passes_test(check_role_vendor) # if loggedin user is cutomer and tried to access vendor dashboard then it will give error
@@ -62,3 +68,81 @@ def vprofile(request):
         'profile': profile,
         'Vendor': Vendor,
     })
+
+
+@login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
+@user_passes_test(check_role_vendor) # if loggedin user is cutomer and tried to access vendor dashboard then it will give error
+def menu_builder(request):
+    Vendor = get_vendor(request)
+    categories = Category.objects.filter(vendor = Vendor).order_by('created_at')
+    context = {
+        "categories":categories
+    }
+    return render(request, 'vendor/menu_builder.html', context)
+
+
+
+@login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
+@user_passes_test(check_role_vendor) # if loggedin user is cutomer and tried to access vendor dashboard then it will give error
+def fooditems_by_category(request, pk = None):
+    Vendor = get_vendor(request)
+    category = get_object_or_404(Category, pk = pk)
+    fooditems = FoodItem.objects.filter(vendor=Vendor, category=category)
+    context = {
+        "fooditems":fooditems,
+        "category":category,   
+    }
+    return render(request, 'vendor/fooditems_by_category.html', context)
+
+
+
+@login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
+@user_passes_test(check_role_vendor) # if loggedin user is cutomer and tried to access vendor dashboard then it will give error
+def add_category(request):
+    if request.method == 'POST':
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            category_name = form.cleaned_data["category_name"]
+            category = form.save(commit=False)
+            category.vendor = get_vendor(request)
+            
+            category.slug = slugify(category_name)
+            form.save()
+            messages.success(request, "Category added successfully!")
+            return redirect("menu_builder")
+        else:
+            print(form.errors)
+    else:
+        form = CategoryForm()
+    context = {
+        'form':form
+        }
+    return render(request, 'vendor/add_category.html',context)
+
+def edit_category(request, pk = None):
+    category = get_object_or_404(Category, pk=pk)
+    if request.method == 'POST':
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            category_name = form.cleaned_data["category_name"]
+            category = form.save(commit=False)
+            category.vendor = get_vendor(request)
+            category.slug = slugify(category_name)
+            form.save()
+            messages.success(request, "Category added successfully!")
+            return redirect("menu_builder")
+        else:
+            print(form.errors)
+    else:
+        form = CategoryForm()
+    context = {
+        'form':form,
+        "category":category
+        }
+    return render(request, 'vendor/edit_category.html',context)
+
+def delete_category(request, pk = None):
+    category = get_object_or_404(Category, pk=pk)
+    category.delete()
+    messages.success(request, "Category deleted successfully!")
+    return redirect("menu_builder")
