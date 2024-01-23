@@ -77,16 +77,17 @@ def add_category(request):
             category_name = form.cleaned_data["category_name"]
             category = form.save(commit=False)
             category.vendor = get_vendor(request)
-
+            category.save()
+           
             # Check if the slug already exists in the database
-            slug = slugify(category_name)
-            if Category.objects.filter(slug=slug).exists():
-                # Handle the case when the slug already exists
-                messages.error(request, "Category with this slug already exists.")
-                return redirect("menu_builder")
-
-            category.slug = slug
-            form.save()
+            #slug = slugify(category_name)
+            # if form.objects.filter(slug=category.slug).exists():
+            #     # Handle the case when the slug already exists
+            #     messages.error(request, "Category with this slug already exists.")
+            #     return redirect("menu_builder")
+            category.save()
+            category.slug = slugify(category)+"-"+str(category.id)
+            category.save()
             messages.success(request, "Category added successfully!")
             return redirect("menu_builder")
         else:
