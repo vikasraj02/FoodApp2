@@ -13,34 +13,6 @@ from menu.forms import CategoryForm,FoodItemForm
 from django.template.defaultfilters import slugify
 
 # Create your views here.
-
-# def vprofile(request):
-#     profile = get_object_or_404(UserProfile, user=request.user)
-#     Vendor = get_object_or_404(vendor, user=request.user)
-    
-#     if request.method == 'POST':
-#         profile_form = UserProfileForm(request.POST, request.FILES, instance= profile)
-#         vendor_form = VendorForm(request.POST, request.FILES, instance= Vendor)
-#         if profile_form.is_valid() and vendor_form.is_valid():
-#             profile_form.save()
-#             vendor_form.save()
-#             messages.success(request,"Settings Updated")
-#             return redirect('vprofile')
-#         else:
-#             print("Profile Form Errors:", profile_form.errors)
-#             print("Vendor Form Errors:", vendor_form.errors)
-
-#     else:
-#         profile_form = UserProfileForm(instance= profile)
-#         vendor_form = VendorForm(instance= Vendor)
-#     context = {
-#         "vendor_form":vendor_form,
-#         'profile_form':profile_form,
-#         'profile':profile,
-#         'Vendor': Vendor,
-#     }
-#     return render(request, 'vendor/vprofile.html',context)
-
 def get_vendor (request):
     Vendor = vendor.objects.get(user=request.user)
     return Vendor

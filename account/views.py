@@ -10,6 +10,7 @@ from django.core.exceptions import PermissionDenied
 from django.utils.http import urlsafe_base64_decode
 import logging
 from vendor.models import vendor
+from django.template.defaultfilters import slugify
 
 
 # Restrict the vendor from accessing the customer page
@@ -56,7 +57,10 @@ def registerUser(request):
     return render(request, 'account/registerUser.html',context)
 
 def registerVendor(request):
-    if request.method == 'POST':
+    if request.user.is_authenticated:
+        messages.success(request,"Your are alredy logged in")
+        return redirect("myAccount")
+    elif request.method == "POST":
         form = UserForms(request.POST)
         V_form = VendorForm(request.POST, request.FILES) 
 
@@ -68,6 +72,8 @@ def registerVendor(request):
             user.save()
             vendor = V_form.save(commit=False)
             vendor.user = user
+            vendor_name = V_form.cleaned_data["vendor_name"]
+            vendor.vendor_slug = slugify(vendor_name)+'-'+str(user.id)
             user_profile = UserProfile.objects.get(user=user)
             vendor.user_profile = user_profile
             vendor.save()
