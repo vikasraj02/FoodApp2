@@ -96,7 +96,7 @@ $(document).ready(function(){
                     calculateCartValue(
                         
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dict'],
                         response.cart_amount['grand_total'],
                        
                     )
@@ -109,7 +109,7 @@ $(document).ready(function(){
         $('.item_qty').each(function(){
             var the_id = $(this).attr('id')
             var qty = $(this).attr('data-qty')
-            console.log(qty)
+
             $("#"+the_id).html(qty)
         })
 
@@ -140,7 +140,7 @@ $(document).ready(function(){
                     calculateCartValue(
                         
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dict'],
                         response.cart_amount['grand_total'],
                        
                     )
@@ -166,6 +166,7 @@ $(document).ready(function(){
             url: url,
             success: function(response){
                 console.log(response)
+                
                 if(response.status === 'Falied'){
                     swal(response.message, '', 'error');
                 }else{
@@ -178,10 +179,11 @@ $(document).ready(function(){
                     calculateCartValue(
                         
                         response.cart_amount['subtotal'],
-                        response.cart_amount['tax'],
+                        response.cart_amount['tax_dict'],
                         response.cart_amount['grand_total'],
                        
                     )
+                    console.log("test")
                 }
                 
             }
@@ -205,14 +207,20 @@ $(document).ready(function(){
         }
     }
 
-    function calculateCartValue(subtotal, tax, grandtotal){
+    function calculateCartValue(subtotal, tax_dict, grandtotal){
         if(window.location.pathname == '/cart/'){
-            console.log("your inside cart page")
-            console.log(subtotal)
             $("#SubTotal").html(subtotal);
-            $("#tax").html(tax);
             $("#total").html(grandtotal);
+            //console.log(tax_dict)
+            for(key1 in tax_dict){
+                //console.log(tax_dict[key1])
+                for(key2 in tax_dict[key1]){
+                    //console.log(tax_dict[key1][key2])
+                    $("#tax-"+key1).html(tax_dict[key1][key2])
+                }
+            }
         }
+        
     }
     //Add opening hour  
     $(".add_hour").on("click", function(e) {

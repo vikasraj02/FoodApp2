@@ -46,6 +46,7 @@ def vendor_details(request, vendor_slug):
         "cart_items":cart_items,
         "opening_hour":opening_hour,
         "current_opening_hour":current_opening_hour,
+
     }
     return render(request,'marketplace/vendor_detail.html',context)
 
@@ -58,6 +59,7 @@ def add_to_cart(request, food_id):
                 fooditem = FoodItem.objects.get(id=food_id)
                 #check if user has alredy added that food to the cart
                 try:
+                    
                     chkCart = Cart.objects.get(user=request.user, fooditem = fooditem)
                     #increase the cart quantity
                     chkCart.quantity += 1

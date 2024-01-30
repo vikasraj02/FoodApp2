@@ -77,6 +77,7 @@ class OpeningHours(models.Model):
     is_closed = models.BooleanField(default=False)
     
     class Meta:
+        verbose_name_plural = "OpeningHours"
         ordering = ('day','-from_hour')
         unique_together = ('vendor','day','from_hour','to_hour')
         
