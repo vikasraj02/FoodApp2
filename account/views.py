@@ -11,7 +11,7 @@ from django.utils.http import urlsafe_base64_decode
 import logging
 from vendor.models import vendor
 from django.template.defaultfilters import slugify
-
+from orders.models import Order
 
 # Restrict the vendor from accessing the customer page
 def check_role_vendor(user):
@@ -128,7 +128,10 @@ def myAccount(request):
 @login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
 @user_passes_test(check_role_customer) # if loggedin user is vender and tried to access customer dashboard then it will give error
 def CustomerDashboard(request):
-    return render(request, 'account/CustomerDashboard.html')
+    orders = Order.objects.filter(user=request.user,is_ordered = True)
+    recent_orders = orders[:5]
+    context = {'orders': orders,"orders_count":orders.count(),"recent_orders":recent_orders}
+    return render(request, 'account/CustomerDashboard.html',context)
 
 
 @login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
