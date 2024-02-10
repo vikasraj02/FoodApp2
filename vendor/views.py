@@ -1,6 +1,8 @@
 from django.db import IntegrityError
 from django.http import HttpResponse, JsonResponse
 from django.shortcuts import redirect, render, get_object_or_404
+
+from orders.models import Order, OrderedFood
 from . forms import VendorForm,OpeningHoursForm
 from account.forms import UserProfileForm
 
@@ -226,3 +228,23 @@ def remove_opening_hours(request, pk=None):
             hour = get_object_or_404(OpeningHours, pk=pk)
             hour.delete()
             return JsonResponse({'status': 'success','id':pk})
+def order_detail(request, order_number):
+    try:
+        order = Order.objects.get(order_number=order_number, is_ordered=True)
+        ordered_food = OrderedFood.objects.filter(order=order, fooditem__vendor= get_vendor(request))
+        context = {
+            'ordered_food': ordered_food, 
+            "order":order,
+            "sub_total":order.get_total_by_vendor()["subtotal"],
+            "tax_data":order.get_total_by_vendor()['tax_dict'],
+            "grand_total":round(order.get_total_by_vendor()['grand_total'],2),
+            }
+        return render(request, 'vendor/order_detail.html',context)
+    except:
+        return redirect('vendor')
+    
+def my_orders(request):
+    Vendor = vendor.objects.get(user = request.user)
+    orders = Order.objects.filter(vedors__in = [Vendor.id], is_ordered = True).order_by('-created_at')
+    context = {'orders':orders}
+    return render(request,"vendor/my_orders.html",context)

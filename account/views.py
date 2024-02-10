@@ -1,3 +1,4 @@
+import datetime
 from django.shortcuts import render, HttpResponse, redirect
 from account.models import User, UserProfile
 from .utils import detectUser, send_verifaction_email   
@@ -137,7 +138,27 @@ def CustomerDashboard(request):
 @login_required(login_url="login")# this line will check the user logged or not if user has not logged in and trying to access the page then it will trow error
 @user_passes_test(check_role_vendor) # if loggedin user is cutomer and tried to access vendor dashboard then it will give error
 def VendorDashboard(request):
-    return render(request, 'account/VendorDashboard.html')
+    Vendor = vendor.objects.get(user = request.user)
+    orders = Order.objects.filter(vedors__in = [Vendor.id], is_ordered = True).order_by('-created_at')
+    recent_orders = orders[:10]
+    
+    #current month revenue
+    current_month = datetime.datetime.now().month
+    current_month_order = orders.filter(vedors__in = [Vendor.id], created_at__month = current_month)
+    current_month_revenue = 0
+    for i in current_month_order:
+        current_month_revenue += i.get_total_by_vendor()["grand_total"]
+    
+    total_revenue = 0
+    for i in orders:
+        total_revenue += i.get_total_by_vendor()["grand_total"]
+    context = {'orders':orders,
+               "orders_count":orders.count(),
+               "recent_orders":recent_orders,
+               'total_revenue':total_revenue,
+               'current_month_revenue':current_month_revenue,
+               }
+    return render(request, 'account/VendorDashboard.html',context)
 
 
 

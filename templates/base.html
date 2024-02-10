@@ -32,6 +32,16 @@
 	<script src = "{%static 'js/custom.js'%}"></script>
 	<!-- Include the paypal javascript SDK-->
 	<script src="https://www.paypal.com/sdk/js?client-id={{ PAYPAL_CLIENT_ID }}&currency=USD"></script>
+
+	{% comment %} include datatable plugin script and css {% endcomment %}
+	<link rel="stylesheet" href="//cdn.datatables.net/1.13.7/css/jquery.dataTables.min.css">
+	<script src="//cdn.datatables.net/1.13.7/js/jquery.dataTables.min.js"></script>
+	<script>
+		$(document).ready( function () {
+			$('#myOrdersTable').DataTable();
+		} )
+	</script>
+	
 	<style>
 		body, .main-section p, .mce-content-body p{
 			font:Normal  14px/24px "Open Sans", sans-serif;letter-spacing: 0px;text-transform: none;color: #515151 !important;
